@@ -20,6 +20,7 @@ const getSortedImportNodes = (code: string, options?: ParserOptions) => {
             testingOnly.normalizeImportOrderOption(DEFAULT_IMPORT_ORDER),
         importOrderCombineTypeAndValueImports: true,
         importOrderCaseSensitive: false,
+        importOrderSortByLength: false,
         hasAnyCustomGroupSeparatorsInImportOrder: false,
         provideGapAfterTopOfFileComments: false,
         importOrderSafeSideEffects: [],

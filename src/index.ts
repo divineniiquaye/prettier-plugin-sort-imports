@@ -53,6 +53,13 @@ export const options = {
         description:
             'Array of globs for side-effect-only imports that are considered safe to sort.',
     },
+    importOrderSortByLength: {
+        type: 'boolean',
+        category: 'Global',
+        default: false,
+        description:
+            'Provide a boolean flag to sort imports by length (descending).',
+    },
 } satisfies Record<
     keyof PluginConfig,
     StringArraySupportOption | BooleanSupportOption | StringSupportOption

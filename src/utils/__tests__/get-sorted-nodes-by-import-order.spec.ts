@@ -31,6 +31,7 @@ test('it returns all sorted nodes', () => {
     const sorted = getSortedNodesByImportOrder(result, {
         importOrder: testingOnly.normalizeImportOrderOption(['^[./]']),
         importOrderCaseSensitive: false,
+        importOrderSortByLength: false,
     }) as ImportDeclaration[];
 
     expect(getSortedNodesNamesAndNewlines(sorted)).toEqual([
@@ -86,6 +87,7 @@ test('it returns all sorted nodes with sort order', () => {
             '^[./]',
         ]),
         importOrderCaseSensitive: false,
+        importOrderSortByLength: false,
     }) as ImportDeclaration[];
     expect(getSortedNodesNamesAndNewlines(sorted)).toEqual([
         'node:fs/promises',
@@ -142,6 +144,7 @@ import {type B, A} from 'z';
     const sorted = getSortedNodesByImportOrder(result, {
         importOrder: testingOnly.normalizeImportOrderOption(['^[./]']),
         importOrderCaseSensitive: false,
+        importOrderSortByLength: false,
     }) as ImportDeclaration[];
     expect(getSortedNodesNamesAndNewlines(sorted)).toEqual(['k', 't', 'z']);
     expect(
@@ -162,6 +165,7 @@ test('it returns all sorted nodes with builtin specifiers at the top', () => {
     const sorted = getSortedNodesByImportOrder(result, {
         importOrder: testingOnly.normalizeImportOrderOption(['^[./]']),
         importOrderCaseSensitive: false,
+        importOrderSortByLength: false,
     }) as ImportDeclaration[];
 
     expect(getSortedNodesNamesAndNewlines(sorted)).toEqual([
@@ -194,6 +198,7 @@ test('it returns all sorted nodes with custom third party modules and builtins a
             '^[./]',
         ]),
         importOrderCaseSensitive: false,
+        importOrderSortByLength: false,
     }) as ImportDeclaration[];
     expect(getSortedNodesNamesAndNewlines(sorted)).toEqual([
         'node:fs/promises',
@@ -226,6 +231,7 @@ test('it returns all sorted nodes with custom separation', () => {
             '^[./]',
         ]),
         importOrderCaseSensitive: false,
+        importOrderSortByLength: false,
     }) as ImportDeclaration[];
     expect(getSortedNodesNamesAndNewlines(sorted)).toEqual([
         'node:fs/promises',
@@ -261,6 +267,7 @@ test('it does not add multiple custom import separators', () => {
             '^[./]',
         ]),
         importOrderCaseSensitive: false,
+        importOrderSortByLength: false,
     }) as ImportDeclaration[];
     expect(getSortedNodesNamesAndNewlines(sorted)).toEqual([
         'node:fs/promises',
@@ -287,6 +294,7 @@ test('it should sort nodes case-sensitively', () => {
     const sorted = getSortedNodesByImportOrder(result, {
         importOrder: testingOnly.normalizeImportOrderOption(['^[./]']),
         importOrderCaseSensitive: true,
+        importOrderSortByLength: false,
     }) as ImportDeclaration[];
     expect(getSortedNodesNamesAndNewlines(sorted)).toEqual([
         'node:fs/promises',
@@ -304,5 +312,80 @@ test('it should sort nodes case-sensitively', () => {
         'x',
         'z',
         './local',
+    ]);
+});
+
+test('it sorts imports by line count when importOrderSortByLength is true', () => {
+    const code = `
+import { adjustCommentsOnSortedNodes } from 'adjust-comments-on-sorted-nodes';
+import { explodeTypeAndValueSpecifiers } from 'explode-type-and-value-specifiers';
+import {
+	Pressable,
+	PressableProps as RNPressableProps,
+	TargetedEvent,
+	type GestureResponderEvent,
+	type MouseEvent,
+	type NativeSyntheticEvent
+} from "react-native";
+import { getChunkTypeOfNode } from 'get-chunk-type-of-node';
+import { getSortedNodesByImportOrder } from 'get-sorted-nodes-by-import-order';
+import { mergeNodesWithMatchingImportFlavors } from 'merge-nodes-with-matching-flavors';
+import React, { ReactNode, useCallback, useMemo, useState } from "react";
+`;
+    const result = getImportNodes(code, {
+        plugins: ['typescript'],
+    });
+    const sorted = getSortedNodesByImportOrder(result, {
+        importOrder: testingOnly.normalizeImportOrderOption(['^[a-z]']),
+        importOrderSortByLength: true,
+        importOrderCaseSensitive: false,
+    }) as ImportDeclaration[];
+    expect(getSortedNodesNamesAndNewlines(sorted)).toEqual([
+        'react-native',
+        'merge-nodes-with-matching-flavors',
+        'explode-type-and-value-specifiers',
+        'get-sorted-nodes-by-import-order',
+        'adjust-comments-on-sorted-nodes',
+        'react',
+        'get-chunk-type-of-node',
+    ]);
+});
+test('it sorts imports by line count when importOrderSortByLength is true and already sorted', () => {
+    const code = `
+import { ObservablePersistMMKV } from "@legendapp/state/persist-plugins/mmkv";
+import { syncObservable } from "@legendapp/state/sync";
+import { observable } from "@legendapp/state";
+import { MMKV } from "react-native-mmkv";
+
+import { APP_STATE_KEY } from "@/constants";
+import { AppState } from "@/types";
+import { Env } from "@/env";
+`;
+    const result = getImportNodes(code, {
+        plugins: ['typescript'],
+    });
+    const sorted = getSortedNodesByImportOrder(result, {
+        importOrder: testingOnly.normalizeImportOrderOption([
+            '<BUILTIN_MODULES>',
+            '',
+            '<THIRD_PARTY_MODULES>',
+            '',
+            '^(@repo|@)(/.*)$',
+            '',
+            '^[.]',
+        ]),
+        importOrderSortByLength: true,
+        importOrderCaseSensitive: false,
+    }) as ImportDeclaration[];
+    expect(getSortedNodesNamesAndNewlines(sorted)).toEqual([
+        '@legendapp/state/persist-plugins/mmkv',
+        '@legendapp/state/sync',
+        '@legendapp/state',
+        'react-native-mmkv',
+        '',
+        '@/constants',
+        '@/types',
+        '@/env',
+        '',
     ]);
 });

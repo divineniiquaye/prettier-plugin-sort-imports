@@ -1,3 +1,5 @@
+import { ImportDeclaration } from '@babel/types';
+
 export function naturalSort(a: string, b: string): number {
     const left = typeof a === 'string' ? a : String(a);
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator/Collator#syntax
@@ -44,4 +46,15 @@ export function naturalSortCaseSensitive(a: string, b: string) {
         bIndex++;
     }
     return 0;
+}
+
+/**
+ * Compares two import declarations by their line count.
+ * The one with fewer lines comes first. If equal, sorts descending.
+ */
+export function sortByLineCount(a: ImportDeclaration, b: ImportDeclaration) {
+    const lenA = (a.end || 0) - (a.start || 0);
+    const lenB = (b.end || 0) - (b.start || 0);
+    // If line counts are equal, sort descending
+    return lenB - lenA || naturalSort(b.source.value, a.source.value);
 }

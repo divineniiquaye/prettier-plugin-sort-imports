@@ -31,6 +31,7 @@ test('it should remove nodes from the original code', async () => {
         importOrderCaseSensitive: false,
         importOrderSafeSideEffects: [],
         hasAnyCustomGroupSeparatorsInImportOrder: false,
+        importOrderSortByLength: false,
         provideGapAfterTopOfFileComments: false,
     });
     const allCommentsFromImports = getAllCommentsFromNodes(sortedNodes);

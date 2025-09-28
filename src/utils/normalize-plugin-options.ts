@@ -108,6 +108,7 @@ export function examineAndNormalizePluginOptions(options: NormalizableOptions) {
         importOrderCombineTypeAndValueImports,
         importOrderCaseSensitive: !!options.importOrderCaseSensitive,
         importOrderSafeSideEffects: options.importOrderSafeSideEffects,
+        importOrderSortByLength: !!options.importOrderSortByLength,
         hasAnyCustomGroupSeparatorsInImportOrder: importOrder.some(
             isCustomGroupSeparator,
         ),

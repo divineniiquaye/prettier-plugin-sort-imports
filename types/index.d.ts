@@ -110,6 +110,12 @@ export interface PluginConfig {
      *  @default []
      */
     importOrderSafeSideEffects?: string[];
+
+    /**
+     * If true, imports are sorted by line count (descending) instead of alphabetically.
+     * @default false
+     */
+    importOrderSortByLength?: boolean;
 }
 
 export type PrettierConfig = PluginConfig & Config;
